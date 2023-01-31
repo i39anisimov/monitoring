@@ -1,8 +1,9 @@
 version: "3.8"
 
 networks:
-  monitoring:
-    driver: bridge
+  sport:
+    external: true
+
 
 services:
   prometheus:
@@ -10,10 +11,11 @@ services:
     container_name: prometheus
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus-data:/prometheus
     ports:
       - "9090:9090"
     networks:
-      - monitoring
+      - sport
 
   grafana:
     image: grafana/grafana:9.3.6
@@ -25,7 +27,7 @@ services:
     ports:
       - "3000:3000"
     networks:
-      - monitoring
+      - sport
     links:
       - prometheus
 
@@ -36,5 +38,5 @@ services:
     expose:
       - 9100
     networks:
-      - monitoring
+      - sport
 
