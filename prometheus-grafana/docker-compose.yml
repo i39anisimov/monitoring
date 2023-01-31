@@ -1,26 +1,40 @@
-version: "3.7"
+version: "3.8"
+
+networks:
+  monitoring:
+    driver: bridge
+
 services:
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.41.0
+    container_name: prometheus
     volumes:
             - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
+    networks:
+      - monitoring
+
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:9.3.6
+    container_name: grafana
     volumes:
+       - ./grafana/data/:/var/lib/grafana
        - ./grafana/grafana.ini:/etc/grafana/grafana.ini
        - ./grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yaml
     ports:
       - 3000:3000
+    networks:
+      - monitoring
     links:
       - prometheus
 
-  # Add below section
   node-exporter:
-    image: prom/node-exporter:latest
+    image: prom/node-exporter:v1.5.0
     container_name: monitoring_node_exporter
     restart: unless-stopped
     expose:
       - 9100
+    networks:
+      - monitoring
 
